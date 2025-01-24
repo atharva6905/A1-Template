@@ -29,15 +29,25 @@ public class Main {
             CommandLine cmd = parser.parse(options, args);
             if (cmd.hasOption("i")) {
                 String inputFilePath = cmd.getOptionValue("i");
+                logger.info("Attempting to load maze from file: " + inputFilePath);
+
+                // Load the maze
                 Maze maze = MazeLoader.loadMaze(inputFilePath);
-                logger.info("Maze loaded successfully.");
-                // For now, just print the maze to verify loading
+
+                // Print the maze
                 printMaze(maze);
+
+                // Log successful loading
+                logger.info("Maze loaded successfully.");
             } else {
-                logger.error("Input file not specified.");
+                logger.error("Input file not specified. Use the -i flag to specify the maze file.");
             }
-        } catch (ParseException | IOException e) {
-            logger.error("Error parsing command line or loading maze: ", e);
+        } catch (ParseException e) {
+            logger.error("Error parsing command line arguments: ", e);
+        } catch (IOException e) {
+            logger.error("Error loading the maze: ", e);
+        } catch (Exception e) {
+            logger.error("An unexpected error occurred: ", e);
         }
     }
 

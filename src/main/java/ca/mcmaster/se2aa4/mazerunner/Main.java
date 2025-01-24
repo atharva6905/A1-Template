@@ -12,6 +12,9 @@ import org.apache.logging.log4j.Logger;
 
 import ca.mcmaster.se2aa4.mazerunner.maze.Maze;
 import ca.mcmaster.se2aa4.mazerunner.maze.MazeLoader;
+import ca.mcmaster.se2aa4.mazerunner.maze.MazeSolver;
+import ca.mcmaster.se2aa4.mazerunner.explorer.Explorer;
+import ca.mcmaster.se2aa4.mazerunner.explorer.Position;
 
 public class Main {
 
@@ -23,6 +26,7 @@ public class Main {
         // Set up Apache CLI options
         Options options = new Options();
         options.addOption("i", "input", true, "Input file for the maze");
+        options.addOption("p", "path", true, "Path to verify");
 
         CommandLineParser parser = new DefaultParser();
         try {
@@ -39,6 +43,21 @@ public class Main {
 
                 // Log successful loading
                 logger.info("Maze loaded successfully.");
+
+                if (cmd.hasOption("p")) {
+                    String path = cmd.getOptionValue("p");
+                    logger.info("Verifying path: " + path);
+
+                    // Verify the path
+                    Explorer explorer = new Explorer(new Position(maze.getEntryX(), maze.getEntryY(), 'E'));
+                    MazeSolver solver = new MazeSolver(maze, explorer);
+                    boolean isValid = solver.verifyPath(path);
+                    if (isValid) {
+                        logger.info("The path is valid.");
+                    } else {
+                        logger.error("The path is invalid.");
+                    }
+                }
             } else {
                 logger.error("Input file not specified. Use the -i flag to specify the maze file.");
             }

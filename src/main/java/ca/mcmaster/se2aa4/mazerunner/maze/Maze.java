@@ -11,8 +11,7 @@ public class Maze {
 
     public Maze(char[][] grid) {
         this.grid = grid;
-        locateEntryAndExit();
-        logEntryAndExitPoints();
+        locateEntryExit();
     }
 
     public char[][] getGrid() {
@@ -35,25 +34,26 @@ public class Maze {
         return exitY;
     }
 
-    private void locateEntryAndExit() {
-        // Locate entry and exit points on the borders
+    private void locateEntryExit() {
+        // Locate entry point on the left wall
         for (int y = 0; y < grid.length; y++) {
-            for (int x = 0; x < grid[y].length; x++) {
-                if (grid[y][x] == ' ' && (x == 0 || x == grid[y].length - 1 || y == 0 || y == grid.length - 1)) {
-                    if (entryX == -1 && entryY == -1) {
-                        entryX = x;
-                        entryY = y;
-                    } else {
-                        exitX = x;
-                        exitY = y;
-                        return;
-                    }
-                }
+            if (grid[y][0] == ' ') {
+                entryX = 0;
+                entryY = y;
+                break;
             }
         }
-    }
 
-    private void logEntryAndExitPoints() {
+        // Locate exit point on the right wall
+        for (int y = 0; y < grid.length; y++) {
+            if (grid[y][grid[y].length - 1] == ' ') {
+                exitX = grid[y].length - 1;
+                exitY = y;
+                break;
+            }
+        }
+
+        // Log entry and exit points
         if (entryX != -1 && entryY != -1) {
             logger.info("Entry point (row, column): (" + entryY + ", " + entryX + ")");
         } else {
@@ -64,6 +64,10 @@ public class Maze {
             logger.info("Exit point (row, column): (" + exitY + ", " + exitX + ")");
         } else {
             logger.error("Exit point not found in the maze.");
+        }
+
+        if (entryX == -1 || exitX == -1) {
+            logger.error("Failed to locate entry or exit points.");
         }
     }
 }

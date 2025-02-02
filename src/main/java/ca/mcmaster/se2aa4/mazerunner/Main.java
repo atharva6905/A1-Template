@@ -7,23 +7,17 @@ import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
+import ca.mcmaster.se2aa4.mazerunner.explorer.Explorer;
+import ca.mcmaster.se2aa4.mazerunner.explorer.Position;
 import ca.mcmaster.se2aa4.mazerunner.maze.Maze;
 import ca.mcmaster.se2aa4.mazerunner.maze.MazeLoader;
 import ca.mcmaster.se2aa4.mazerunner.maze.MazeSolver;
-import ca.mcmaster.se2aa4.mazerunner.explorer.Explorer;
-import ca.mcmaster.se2aa4.mazerunner.explorer.Position;
+import ca.mcmaster.se2aa4.mazerunner.maze.PathValidator;
 
 public class Main {
 
-    private static final Logger logger = LogManager.getLogger();
-
     public static void main(String[] args) {
-        logger.info("** Starting Maze Runner");
-
-        // Set up Apache CLI options
         Options options = new Options();
         options.addOption("i", "input", true, "Input file for the maze");
         options.addOption("p", "path", true, "Path to verify");
@@ -31,49 +25,38 @@ public class Main {
         CommandLineParser parser = new DefaultParser();
         try {
             CommandLine cmd = parser.parse(options, args);
-            if (cmd.hasOption("i")) {
-                String inputFilePath = cmd.getOptionValue("i");
-                logger.info("Attempting to load maze from file: " + inputFilePath);
+            if (!cmd.hasOption("i")) {
+                System.err.println("Input file not specified. Use -i flag.");
+                return;
+            }
+            String inputFilePath = cmd.getOptionValue("i");
+            Maze maze = MazeLoader.loadMaze(inputFilePath);
+            printMaze(maze);
 
-                // Load the maze
-                Maze maze = MazeLoader.loadMaze(inputFilePath);
-
-                // Print the maze
-                printMaze(maze);
-
-                // Log successful loading
-                logger.info("Maze loaded successfully.");
-
-                if (cmd.hasOption("p")) {
-                    String path = cmd.getOptionValue("p");
-                    logger.info("Verifying path: " + path);
-
-                    // Verify the path
-                    Explorer explorer = new Explorer(new Position(maze.getEntryX(), maze.getEntryY(), 'E'));
-                    MazeSolver solver = new MazeSolver(maze, explorer);
-                    boolean isValid = solver.verifyPath(path);
-                    if (isValid) {
-                        logger.info("The path is valid.");
-                    } else {
-                        logger.error("The path is invalid.");
-                    }
-                }
+            if (cmd.hasOption("p")) {
+                String path = cmd.getOptionValue("p");
+                Explorer explorer = new Explorer(new Position(maze.getEntryX(), maze.getEntryY(), 'E'));
+                PathValidator validator = new PathValidator(maze, explorer);
+                boolean valid = validator.verifyPath(path);
+                System.out.println("The path is " + (valid ? "valid." : "invalid."));
             } else {
-                logger.error("Input file not specified. Use the -i flag to specify the maze file.");
+                Explorer explorer = new Explorer(new Position(maze.getEntryX(), maze.getEntryY(), 'E'));
+                MazeSolver solver = new MazeSolver(maze, explorer);
+                String path = solver.solve();
+                System.out.println("Solved path: " + path);
             }
         } catch (ParseException e) {
-            logger.error("Error parsing command line arguments: ", e);
+            System.err.println("Error parsing command line arguments: " + e.getMessage());
         } catch (IOException e) {
-            logger.error("Error loading the maze: ", e);
+            System.err.println("Error loading maze: " + e.getMessage());
         } catch (Exception e) {
-            logger.error("An unexpected error occurred: ", e);
+            System.err.println("Unexpected error: " + e.getMessage());
         }
     }
 
     private static void printMaze(Maze maze) {
-        char[][] grid = maze.getGrid();
-        for (char[] row : grid) {
-            System.out.println(row);
+        for (char[] row : maze.getGrid()) {
+            System.out.println(new String(row));
         }
     }
 }

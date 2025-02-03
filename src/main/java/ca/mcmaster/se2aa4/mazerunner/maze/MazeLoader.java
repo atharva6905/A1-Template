@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MazeLoader {
+    // Load the maze from a file
     public static Maze loadMaze(String filePath) throws IOException {
         BufferedReader reader = new BufferedReader(new FileReader(filePath));
         List<char[]> lines = new ArrayList<>();

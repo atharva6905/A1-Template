@@ -56,8 +56,10 @@ public class Main {
                     boolean isValid = validator.verifyPath(path);
                     if (isValid) {
                         logger.info("The path is valid.");
+                        System.out.println("The path is valid.");
                     } else {
                         logger.error("The path is invalid.");
+                        System.err.println("The path is invalid.");
                     }
                 } else {
                     // Solve the maze using the right-hand rule
@@ -65,6 +67,7 @@ public class Main {
                     MazeSolver solver = new RightHandSolver(maze, explorer);
                     String path = solver.solve();
                     logger.info("Solved path: " + path);
+                    System.out.println("Solved path: " + path);
                 }
             } else {
                 logger.error("Input file not specified. Use the -i flag to specify the maze file.");

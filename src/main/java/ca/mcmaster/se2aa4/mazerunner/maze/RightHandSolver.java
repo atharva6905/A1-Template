@@ -28,15 +28,15 @@ public class RightHandSolver implements MazeSolver {
             }
         }
         String canonicalPath = path.toString();
-        String factorizedPath = factorizePath(canonicalPath);
-        System.out.println(factorizedPath);
-        return factorizedPath;
+        return factorizePath(canonicalPath);
     }
 
+    // Check if the explorer is at the exit
     private boolean isAtExit() {
         return explorer.getPosition().getX() == maze.getExitX() && explorer.getPosition().getY() == maze.getExitY();
     }
 
+    // Check if the explorer can move right
     private boolean canMoveRight() {
         explorer.turnRight();
         boolean canMove = canMoveForward();
@@ -44,26 +44,26 @@ public class RightHandSolver implements MazeSolver {
         return canMove;
     }
 
+    // Check if the explorer can move forward
     private boolean canMoveForward() {
         int x = explorer.getPosition().getX();
         int y = explorer.getPosition().getY();
-        switch (explorer.getPosition().getDirection()) {
-            case 'N':
-                y--;
-                break;
-            case 'E':
-                x++;
-                break;
-            case 'S':
-                y++;
-                break;
-            case 'W':
-                x--;
-                break;
+        char direction = explorer.getPosition().getDirection();
+
+        if (direction == 'N') {
+            y--;
+        } else if (direction == 'E') {
+            x++;
+        } else if (direction == 'S') {
+            y++;
+        } else if (direction == 'W') {
+            x--;
         }
+
         return x >= 0 && x < maze.getGrid()[0].length && y >= 0 && y < maze.getGrid().length && maze.getGrid()[y][x] != '#';
     }
 
+    // Factorize the path to a more compact form
     private String factorizePath(String path) {
         StringBuilder factorized = new StringBuilder();
         int count = 1;

@@ -3,7 +3,7 @@ package ca.mcmaster.se2aa4.mazerunner.explorer;
 import ca.mcmaster.se2aa4.mazerunner.maze.Maze;
 
 public class Explorer {
-    private Position position; // x = column, y = row (0,0 at top-left)
+    private Position position; 
 
     public Explorer(Position position) {
         this.position = position;
@@ -13,25 +13,21 @@ public class Explorer {
         return position;
     }
 
-    /**
-     * Moves the explorer one step in the direction it's facing.
-     * - North: decrease row
-     * - South: increase row
-     * - East:  increase column
-     * - West:  decrease column
-     *
-     * The explorer moves only if the target cell is a space (' ').
-     */
     public boolean moveForward(Maze maze) {
         int row = position.getY();
         int col = position.getX();
+        char direction = position.getDirection();
 
-        switch (position.getDirection()) {
-            case 'N': row--; break;
-            case 'E': col++; break;
-            case 'S': row++; break;
-            case 'W': col--; break;
+        if (direction == 'N') {
+            row--;
+        } else if (direction == 'E') {
+            col++;
+        } else if (direction == 'S') {
+            row++;
+        } else if (direction == 'W') {
+            col--;
         }
+
         if (!isValidMove(maze, row, col)) {
             return false;
         }
@@ -49,20 +45,29 @@ public class Explorer {
     }
 
     public void turnLeft() {
-        switch (position.getDirection()) {
-            case 'N': position.setDirection('W'); break;
-            case 'E': position.setDirection('N'); break;
-            case 'S': position.setDirection('E'); break;
-            case 'W': position.setDirection('S'); break;
+        char direction = position.getDirection();
+        if (direction == 'N') {
+            position.setDirection('W');
+        } else if (direction == 'E') {
+            position.setDirection('N');
+        } else if (direction == 'S') {
+            position.setDirection('E');
+        } else if (direction == 'W') {
+            position.setDirection('S');
         }
     }
 
+
     public void turnRight() {
-        switch (position.getDirection()) {
-            case 'N': position.setDirection('E'); break;
-            case 'E': position.setDirection('S'); break;
-            case 'S': position.setDirection('W'); break;
-            case 'W': position.setDirection('N'); break;
+        char direction = position.getDirection();
+        if (direction == 'N') {
+            position.setDirection('E');
+        } else if (direction == 'E') {
+            position.setDirection('S');
+        } else if (direction == 'S') {
+            position.setDirection('W');
+        } else if (direction == 'W') {
+            position.setDirection('N');
         }
     }
 }

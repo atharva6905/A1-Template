@@ -6,8 +6,10 @@ import org.apache.logging.log4j.Logger;
 public class Maze {
     private static final Logger logger = LogManager.getLogger();
     private char[][] grid;
-    private int entryX = -1, entryY = -1;
-    private int exitX = -1, exitY = -1;
+    private int entryX = -1;
+    private int entryY = -1;
+    private int exitX = -1;
+    private int exitY = -1;
 
     public Maze(char[][] grid) {
         this.grid = grid;
@@ -34,6 +36,7 @@ public class Maze {
         return exitY;
     }
 
+    // Locate the entry and exit points in the maze
     private void locateEntryExit() {
         // Locate entry point on the left wall
         for (int y = 0; y < grid.length; y++) {

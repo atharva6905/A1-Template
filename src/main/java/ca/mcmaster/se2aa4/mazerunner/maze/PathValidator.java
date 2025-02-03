@@ -4,6 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import ca.mcmaster.se2aa4.mazerunner.explorer.Explorer;
+import ca.mcmaster.se2aa4.mazerunner.explorer.Position;
 
 public class PathValidator {
     private static final Logger logger = LogManager.getLogger();
@@ -15,23 +16,23 @@ public class PathValidator {
         this.explorer = explorer;
     }
 
-    /**
-     * Processes the input path where each command is in the form:
-     *   [<count>]<command>
-     * For example:
-     *   "F" means one forward move,
-     *   "2L" means turn left twice.
-     *
-     * A step counter is maintained (each executed move counts as a step).
-     * If a forward move fails or an invalid command is encountered, an error is logged.
-     * At the end, the explorer must be at the maze exit for the path to be valid.
-     */
     public boolean verifyPath(String path) {
+        // Check the path from entry to exit
+        if (validatePath(path, maze.getEntryX(), maze.getEntryY(), maze.getExitX(), maze.getExitY())) {
+            return true;
+        }
+
+        // Check the path from exit to entry
+        return validatePath(path, maze.getExitX(), maze.getExitY(), maze.getEntryX(), maze.getEntryY());
+    }
+
+    private boolean validatePath(String path, int startX, int startY, int endX, int endY) {
+        explorer = new Explorer(new Position(startX, startY, 'E'));
         int i = 0;
         int stepCounter = 0;
         while (i < path.length()) {
             int count = 0;
-            // Parse optional count prefix.
+            // Parse count prefix.
             while (i < path.length() && Character.isDigit(path.charAt(i))) {
                 count = count * 10 + (path.charAt(i) - '0');
                 i++;
@@ -47,33 +48,28 @@ public class PathValidator {
             // Execute the command 'count' times.
             for (int k = 0; k < count; k++) {
                 stepCounter++;
-                switch (move) {
-                    case 'F':
-                        if (!explorer.moveForward(maze)) {
-                            logger.error("Path verification failed at step {} with move '{}'", stepCounter, move);
-                            return false;
-                        }
-                        break;
-                    case 'L':
-                        explorer.turnLeft();
-                        break;
-                    case 'R':
-                        explorer.turnRight();
-                        break;
-                    default:
-                        logger.error("Invalid move character detected: '{}'", move);
+                if (move == 'F') {
+                    if (!explorer.moveForward(maze)) {
+                        logger.error("Path verification failed at step {} with move '{}'", stepCounter, move);
                         return false;
+                    }
+                } else if (move == 'L') {
+                    explorer.turnLeft();
+                } else if (move == 'R') {
+                    explorer.turnRight();
+                } else {
+                    logger.error("Invalid move character detected: '{}'", move);
+                    return false;
                 }
             }
         }
-        // Check if explorer is at the exit.
-        if (explorer.getPosition().getX() == maze.getExitX() &&
-            explorer.getPosition().getY() == maze.getExitY()) {
+        // Check if explorer is at the end position.
+        if (explorer.getPosition().getX() == endX && explorer.getPosition().getY() == endY) {
             return true;
         } else {
-            logger.error("Path complete, but explorer is at (row={}, col={}) instead of exit (row={}, col={})",
+            logger.error("Path complete, but explorer is at (row={}, col={}) instead of end (row={}, col={})",
                 explorer.getPosition().getY(), explorer.getPosition().getX(),
-                maze.getExitY(), maze.getExitX());
+                endY, endX);
             return false;
         }
     }

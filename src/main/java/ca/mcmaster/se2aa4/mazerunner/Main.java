@@ -11,6 +11,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import ca.mcmaster.se2aa4.mazerunner.explorer.Explorer;
+import ca.mcmaster.se2aa4.mazerunner.explorer.MovementLogger;
 import ca.mcmaster.se2aa4.mazerunner.explorer.Position;
 import ca.mcmaster.se2aa4.mazerunner.maze.Maze;
 import ca.mcmaster.se2aa4.mazerunner.maze.MazeLoader;
@@ -46,12 +47,16 @@ public class Main {
                 // Log successful loading
                 logger.info("Maze loaded successfully.");
 
+                Explorer explorer = new Explorer(new Position(maze.getEntryX(), maze.getEntryY(), 'E'));
+
+                // Add observer
+                explorer.addObserver(new MovementLogger());
+
                 if (cmd.hasOption("p")) {
                     String path = cmd.getOptionValue("p");
                     logger.info("Verifying path: " + path);
 
                     // Verify the path
-                    Explorer explorer = new Explorer(new Position(maze.getEntryX(), maze.getEntryY(), 'E'));
                     PathValidator validator = new PathValidator(maze, explorer);
                     boolean isValid = validator.verifyPath(path);
                     if (isValid) {
@@ -63,7 +68,6 @@ public class Main {
                     }
                 } else {
                     // Solve the maze using the right-hand rule
-                    Explorer explorer = new Explorer(new Position(maze.getEntryX(), maze.getEntryY(), 'E'));
                     MazeSolver solver = new RightHandSolver(maze, explorer);
                     String path = solver.solve();
                     logger.info("Solved path: " + path);

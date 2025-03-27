@@ -1,12 +1,33 @@
 package ca.mcmaster.se2aa4.mazerunner.explorer;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import ca.mcmaster.se2aa4.mazerunner.maze.Maze;
 
 public class Explorer {
     private Position position; 
+    private List<ExplorerObserver> observers = new ArrayList<>();
 
     public Explorer(Position position) {
         this.position = position;
+        
+    }
+
+    public void addObserver(ExplorerObserver observer) {
+        observers.add(observer);
+    }
+
+    private void notifyMove() {
+        for (ExplorerObserver obs : observers) {
+            obs.onMove(position);
+        }
+    }
+
+    private void notifyTurn() {
+        for (ExplorerObserver obs : observers) {
+            obs.onTurn(position.getDirection());
+        }
     }
 
     public Position getPosition() {
@@ -18,14 +39,21 @@ public class Explorer {
         int col = position.getX();
         char direction = position.getDirection();
 
-        if (direction == 'N') {
-            row--;
-        } else if (direction == 'E') {
-            col++;
-        } else if (direction == 'S') {
-            row++;
-        } else if (direction == 'W') {
-            col--;
+        switch (direction) {
+            case 'N':
+                row--;
+                break;
+            case 'E':
+                col++;
+                break;
+            case 'S':
+                row++;
+                break;
+            case 'W':
+                col--;
+                break;
+            default:
+                break;
         }
 
         if (!isValidMove(maze, row, col)) {
@@ -33,6 +61,7 @@ public class Explorer {
         }
         position.setX(col);
         position.setY(row);
+        notifyMove();
         return true;
     }
 
@@ -46,28 +75,44 @@ public class Explorer {
 
     public void turnLeft() {
         char direction = position.getDirection();
-        if (direction == 'N') {
-            position.setDirection('W');
-        } else if (direction == 'E') {
-            position.setDirection('N');
-        } else if (direction == 'S') {
-            position.setDirection('E');
-        } else if (direction == 'W') {
-            position.setDirection('S');
+        switch (direction) {
+            case 'N':
+                position.setDirection('W');
+                break;
+            case 'E':
+                position.setDirection('N');
+                break;
+            case 'S':
+                position.setDirection('E');
+                break;
+            case 'W':
+                position.setDirection('S');
+                break;
+            default:
+                break;
         }
+        notifyTurn();
     }
 
 
     public void turnRight() {
         char direction = position.getDirection();
-        if (direction == 'N') {
-            position.setDirection('E');
-        } else if (direction == 'E') {
-            position.setDirection('S');
-        } else if (direction == 'S') {
-            position.setDirection('W');
-        } else if (direction == 'W') {
-            position.setDirection('N');
+        switch (direction) {
+            case 'N':
+                position.setDirection('E');
+                break;
+            case 'E':
+                position.setDirection('S');
+                break;
+            case 'S':
+                position.setDirection('W');
+                break;
+            case 'W':
+                position.setDirection('N');
+                break;
+            default:
+                break;
         }
+        notifyTurn();
     }
 }

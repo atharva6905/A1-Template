@@ -1,4 +1,6 @@
-# Assignment A1 - Maze Runner
+# Assignment A3 - Maze Runner and its Evolution
+
+Student: Atharva Kulkarni
 
 - Original author: Dr. [Sébastien Mosser](https://mosser.github.io)
 - Version: 2024.01

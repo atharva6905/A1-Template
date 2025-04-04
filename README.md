@@ -1,4 +1,4 @@
-# Assignment A3 - Maze Runner and its Evolution
+# Assignment A3 - Maze Runner Again
 
 Student: Atharva Kulkarni
 
